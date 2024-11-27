@@ -1,17 +1,27 @@
-#amfoss-tasks
-#Self-Introduction
-Hello,
-I am Anushka Das,currently a first year student pursuing Computer Science Engineering(CSE).I've always had a knack for programming. Taking Computer Science in 11th and 12th grade 
-ignited my passion for coding and problem-solving. I look forward to joining amFoss, and I assure to give my best to the club.
-#Introspection
-#WHY SHOULD YOU CHOOSE ME?
-I've always been passionate about coding and also have a background in coding in Python.I've always known that that's something I would like to pursue in the near future. I love learning
-new skills and my curiosity is something that drives my passion for exploring new avenues. I am passionate about programming and eager to learn, which will greatly benefits the growth of amFoss. 
-#WHAT'S YOUR PLAN FOR THE NEXT SIX MONTHS?
-In the coming six months, I hope to be better at coding. I am looking forward to learn new programming languages and improve my problem solving skills. Attempting the challenges in Hackerrank has ignited my
-passion in competitive programming and I hope to be able to take part in such challenges in future.
-#HOW WOULD YOU CONTRIBUTE BACK TO THE CLUB?
-I will give my best and work to my maximum potential to contribute to the club. I am willing to work with my teammates and contribute towards any project or task and take part in competitions.
-#DO YOU HAVE ANY FEEDBACK ON THE SELECTION PROCESS?
-In the process, I did stumble upon few tasks which were pretty tough but the support and guidance by our mentors proved to be really helpful. The whole process was a great learning experience for me and I tried out various things for the 
-first time, like competitive programming, creating a webpage. I belive that, even tough it was frustrating to not being able to do some tasks, but with the timely support it was a good experience. 
+🌍 **Wanderlust**<br><br>
+Wanderlust is your ultimate travel companion! Inspired by Airbnb, this full-stack web application allows users to explore 🏡, list 📝, and book ✈️ unique stays across the globe. Built with the powerful MERN stack, it delivers a seamless and interactive experience.<br><br>
+
+✨ **Features**<br>
+🔐 User Authentication: Secure login and registration using passport-local and express-session.<br>
+🏙️ Dynamic Listings: Add, update, or delete stays with images stored in Cloudinary.<br>
+🗺️ Interactive Map: Powered by Mapbox for location-based searches.<br>
+🔍 Search by Location: Find stays in your dream city or region.<br>
+📱 Responsive Design: Beautiful UI across all devices.<br><br>
+🛠️ **Tech Stack**<br><br>
+**Frontend**<br>
+⚛️ React.js: Builds the dynamic UI.<br>
+✨ EJS (server-side rendering): Templates for initial views.<br>
+🎨 Bootstrap: Ensures a polished, responsive design.<br><br>
+**Backend**<br>
+🛡️ Node.js & Express.js: Power the server-side logic.<br>
+🧾 Joi: Validates user inputs like a pro.<br>
+🔄 Method-Override: Enables PUT and DELETE HTTP methods.<br><br>
+**Database**<br>
+🗃️ MongoDB (with Mongoose): Stores and manages data securely.<br><br>
+**Image Uploads**<br>
+☁️ Cloudinary: Handles image storage and delivery.<br><br>
+**Mapping**<br>
+🗺️ Mapbox SDK: Adds location-based magic.<br><br>
+**Session Management**<br>
+💬 Connect-Flash: Flash messages for user feedback.<br>
+🛡️ Connect-Mongo: Securely stores sessions in MongoDB.<br>
