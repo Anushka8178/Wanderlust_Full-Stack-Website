@@ -2,17 +2,22 @@
 <script>
     const mapToken="<%= process.env.MAPTOKEN %>";
     const listing= <%- JSON.stringify(listing) %>;
+    
+
   
 
 </script>
         <div class="row mt-2">
             <div class="col-8 offset-3">
                 <h3><%= listing.title %></h3><br>
+                
+                
+
             </div>
         </div>
 
-        <div class="card col-6 offset-3 listing-card show-card">
-            <img src="<%= listing.image.url %>" class="card-img-top show-img listing-card" alt="listing_image"><br>
+        <div class="card col-6 offset-3 listing-card show-card margin-top-3">
+            <img src="<%= listing.image.url || 'https://plus.unsplash.com/premium_photo-1689609950112-d66095626efb?w=1000&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8aG9tZXxlbnwwfHwwfHx8MA%3D%3D' %>" class="card-img-top show-img listing-card" alt="image"><br>
     
 
             <div class="card-body">
@@ -23,6 +28,11 @@
 
                     <p class="card-text">
                     &#8377;<%= listing.price.toLocaleString("en-IN") %> </p>
+
+                    <p class="card-text">
+                        Category: <%= listing.category %>
+                    </p>
+
                     
                     <p class="card-text">
                     <%= listing.location %> </p>
@@ -30,6 +40,41 @@
                     <p class="card-text">
                     <%= listing.country %> </p>
                     <br><br>
+
+                    <% if(currUser && listing.owner._id.equals(currUser._id)) { %>
+                        <div class="mt-4">
+                            <h5>Mark Dates as Unavailable</h5>
+                            <form action="/listings/<%= listing._id %>/unavailable" method="POST" class="row g-3">
+                                <div class="col-md-6">
+                                    <label for="startDate" class="form-label">Start Date</label>
+                                    <input type="date" class="form-control" id="startDate" name="startDate" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="endDate" class="form-label">End Date</label>
+                                    <input type="date" class="form-control" id="endDate" name="endDate" required>
+                                </div>
+                                <div class="col-12">
+                                    <button type="submit" class="btn btn-dark">Mark as Unavailable</button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div class="mt-4">
+                            <h5>Unavailable Dates</h5>
+                            <% if(listing.unavailableDates && listing.unavailableDates.length > 0) { %>
+                                <ul class="list-group">
+                                    <% listing.unavailableDates.forEach(dateRange => { %>
+                                        <li class="list-group-item">
+                                            <%= new Date(dateRange.start).toLocaleDateString() %> to 
+                                            <%= new Date(dateRange.end).toLocaleDateString() %>
+                                        </li>
+                                    <% }); %>
+                                </ul>
+                            <% } else { %>
+                                <p>No dates marked as unavailable</p>
+                            <% } %>
+                        </div>
+                    <% } %>
                 </div>
             </div>
         </div>
@@ -117,6 +162,24 @@
         
 <script src="/js/map.js">
 
+</script>
+    
+<script>
+    // Set minimum date for start and end dates
+    const today = new Date().toISOString().split('T')[0];
+    const startDateInput = document.getElementById('startDate');
+    const endDateInput = document.getElementById('endDate');
+    
+    if (startDateInput && endDateInput) {
+        startDateInput.min = today;
+        
+        startDateInput.addEventListener('change', () => {
+            endDateInput.min = startDateInput.value;
+            if (endDateInput.value && endDateInput.value < startDateInput.value) {
+                endDateInput.value = startDateInput.value;
+            }
+        });
+    }
 </script>
     
 

@@ -3,8 +3,8 @@
     background-color: rgb(219, 13, 10);
     color: rgb(255, 255, 255);
   }
-  .btn-search-hover{
-    background-color: rgb(219, 13, 10);
+  .btn-search:hover{
+    background-color: rgb(180, 10, 8);
     color: rgb(255, 255, 255);
   }
   .btn-search{
@@ -18,8 +18,41 @@
   .search-input{
     border-radius: 20px;
     padding: 0.5rem 1rem 0.5rem 1rem;
-    width: 20rem;
-    
+    width: 20rem;  
+  }
+  .date-input{
+    border-radius: 20px;
+    padding: 0.5rem 1rem 0.5rem 1rem;
+    width: 13rem;  
+  }
+
+  /* Responsive styles */
+  @media (max-width: 991px) {
+    .navbar-collapse {
+      background-color: rgba(255, 255, 255, 0.95);
+      padding: 1rem;
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .search-form {
+      flex-direction: column;
+      gap: 0.5rem;
+      width: 100%;
+    }
+    .search-input, .date-input, .btn-search {
+      width: 100%;
+      margin: 0.25rem 0;
+    }
+  }
+
+  /* Ensure dropdown menu items are visible */
+  .navbar-nav .nav-link {
+    color: #333;
+    padding: 0.5rem 1rem;
+  }
+  .navbar-nav .nav-link:hover {
+    background-color: rgba(0,0,0,0.05);
+    border-radius: 5px;
   }
 </style>
 
@@ -36,14 +69,32 @@
           <a class="nav-link" href="/listings">Explore</a>
         </div>
 
+        
         <div class="navbar-nav ms-auto">
-          <form class="d-flex" role="search">
-            <input class="form-control me-2 search-input" type="search" placeholder="Search your next destination" >
-            <button class="btn btn-search" type="submit">Search
-              <i class="fa-solid fa-magnifying-glass"></i>
+          <form class="d-flex search-form" role="search" action="/listings" method="GET">
+            <input class="form-control me-2 search-input" 
+                   type="search" 
+                   name="search" 
+                   placeholder="Search destinations, properties..." 
+                   value="<%= typeof searchQuery !== 'undefined' ? searchQuery : '' %>"
+                   autocomplete="off">
+            <input class="form-control me-1 date-input" 
+                   type="date" 
+                   name="checkin" 
+                   placeholder="Check-in" 
+                   value="<%= typeof checkin !== 'undefined' ? checkin : '' %>">
+            <input class="form-control me-1 date-input" 
+                   type="date" 
+                   name="checkout" 
+                   placeholder="Check-out" 
+                   value="<%= typeof checkout !== 'undefined' ? checkout : '' %>">
+            <button class="btn btn-search" type="submit">
+              <i class="fa-solid fa-magnifying-glass"></i> Search
             </button>
           </form>
         </div>
+
+        
 
         <div class="navbar-nav ms-auto">
         <a class="nav-link" href="/listings/new">Airbnb your home</a>
@@ -64,3 +115,28 @@
       
     </div>
   </nav>
+
+<script>
+    // Set minimum date for check-in and check-out
+    const today = new Date().toISOString().split('T')[0];
+    const checkinInput = document.querySelector('input[name="checkin"]');
+    const checkoutInput = document.querySelector('input[name="checkout"]');
+    
+    if (checkinInput && checkoutInput) {
+        checkinInput.min = today;
+        
+        checkinInput.addEventListener('change', () => {
+            checkoutInput.min = checkinInput.value;
+            if (checkoutInput.value && checkoutInput.value < checkinInput.value) {
+                checkoutInput.value = checkinInput.value;
+            }
+        });
+
+        // If checkout date is already set, ensure it's not before checkin
+        if (checkoutInput.value && checkinInput.value) {
+            if (checkoutInput.value < checkinInput.value) {
+                checkoutInput.value = checkinInput.value;
+            }
+        }
+    }
+</script>

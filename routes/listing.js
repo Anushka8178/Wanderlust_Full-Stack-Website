@@ -8,10 +8,14 @@ const multer  = require('multer');
 const {storage}=require("../cloudConfig.js");
 const upload = multer({ storage })
 
+
+
+
 router
 .route("/")
 .get(wrapAsync(listingController.index))
 .post(isLoggedIn, upload.single('listing[image]'),validateListing,wrapAsync(listingController.createListing));
+
 // New Route
 router.get("/new",isLoggedIn, listingController.renderNewForm);
 
@@ -24,5 +28,27 @@ router
 
 // Edit Route
 router.get("/:id/edit",isLoggedIn,isOwner, wrapAsync(listingController.editListing));
+
+
+// routes/listing.js
+
+router.get("/filter", wrapAsync(listingController.filterListings));
+router.get("/filter/:category", wrapAsync(async (req, res) => {
+    const { category } = req.params;
+    let filteredListings;
+    
+    if (category === "Trending") {
+        // For trending, get all listings (can modify logic later)
+        filteredListings = await Listing.find({});
+    } else {
+        // Filter by the specific category
+        filteredListings = await Listing.find({ category: category });
+    }
+
+    res.render("listings/index", { allListings: filteredListings });
+}));
+
+// Add route for marking dates as unavailable
+router.post("/:id/unavailable", isLoggedIn, wrapAsync(listingController.markUnavailable));
 
 module.exports=router;

@@ -1,0 +1,48 @@
+[33mcommit 3aece56aee2908af6a8753b9e30e3a5af5db5305[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m
+Merge: 7cbbac6 366cdef
+Author: Anushka Das <anushkad8178@gmail.com>
+Date:   Wed Apr 30 11:47:23 2025 +0530
+
+    Merge branch 'main' of https://github.com/Anushka8178/Anushka8178
+
+[33mcommit 7cbbac68997a0be5d285d0f3cf7bbf6de15184dd[m
+Author: Anushka Das <anushkad8178@gmail.com>
+Date:   Wed Apr 30 11:46:53 2025 +0530
+
+    Add new data handling scripts
+
+[33mcommit 366cdef3ace1206ea5068b76468e7c7f29ca3239[m
+Author: Anushka8178 <143090027+Anushka8178@users.noreply.github.com>
+Date:   Wed Nov 27 21:37:20 2024 +0530
+
+    Update README.md
+
+[33mcommit 3aae04b13d92ed5b1262fb935b89788e97ab929c[m
+Author: Anushka Das <anushkad8178@gmail.com>
+Date:   Tue Sep 10 16:32:11 2024 +0530
+
+    Add package.json with dependencies
+
+[33mcommit f18e15876d44d390d6c5be14bccdceb71209cc5d[m
+Author: Anushka Das <anushkad8178@gmail.com>
+Date:   Tue Sep 10 15:10:52 2024 +0530
+
+    Update start script to use app.js
+
+[33mcommit eff59a1a3e000a6f7ec23973f4032a406b61f025[m
+Author: Anushka Das <anushkad8178@gmail.com>
+Date:   Tue Sep 10 14:55:46 2024 +0530
+
+    Fix vulnerabilities and update dependencies
+
+[33mcommit 71b4a741a6d1036c19e3b142884f008d3bd263a8[m
+Author: Anushka Das <anushkad8178@gmail.com>
+Date:   Tue Sep 10 14:40:03 2024 +0530
+
+    Add Initial Files
+
+[33mcommit 0d153b7221914e20f3a24254b722333be8a09874[m
+Author: Anushka8178 <143090027+Anushka8178@users.noreply.github.com>
+Date:   Sat Sep 9 22:18:20 2023 +0530
+
+    README.md

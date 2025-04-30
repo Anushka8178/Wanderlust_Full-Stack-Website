@@ -7,7 +7,17 @@ module.exports.listingSchema=Joi.object({
         country:Joi.string().required(),
         price:Joi.number().required().min(0),
         image:Joi.string().allow("",null),
-    }).required(),
+        category: Joi.string().valid(
+            "Budget Rooms",
+            "Heart of the City",
+            "Mountains",
+            "Castles",
+            "Beaches",
+            "Forest Resorts",
+            "Bed & Breakfasts",
+            "Vineyards"
+          ).required()
+    }).required().unknown(true)
 });
 module.exports.reviewSchema=Joi.object({
     review:Joi.object({

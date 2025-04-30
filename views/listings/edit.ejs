@@ -18,13 +18,27 @@
             <div class="invalid-feedback">Please enter a short valid description</div>
 
         </div>
+
+        <div class="mb-3">
+            <label for="category" class="form-label">Category</label><br>
+            <select name="listing[category]" class="form-control" required>
+                <option value="">Select a category</option>
+                <option value="Budget Rooms" <%= listing.category === "Budget Rooms" ? "selected" : "" %>>Budget Rooms</option>
+                <option value="Heart of the City" <%= listing.category === "Heart of the City" ? "selected" : "" %>>Heart of the City</option>
+                <option value="Mountains" <%= listing.category === "Mountains" ? "selected" : "" %>>Mountains</option>
+                <option value="Castles" <%= listing.category === "Castles" ? "selected" : "" %>>Castles</option>
+                <option value="Beaches" <%= listing.category === "Beaches" ? "selected" : "" %>>Beaches</option>
+                <option value="Forest Resorts" <%= listing.category === "Forest Resorts" ? "selected" : "" %>>Forest Resorts</option>
+                <option value="Bed & Breakfasts" <%= listing.category === "Bed & Breakfasts" ? "selected" : "" %>>Bed & Breakfasts</option>
+                <option value="Vineyards" <%= listing.category === "Vineyards" ? "selected" : "" %>>Vineyards</option>
+            </select>
+            <div class="invalid-feedback">Please select a category</div>
+        </div>
+
         <div class="mb-3">
             Original Listing Image <br> <br>
             <img src="<%= originalImageUrl %>" alt="">
         </div>
-
-
-
 
         <div class="mb-3">
             <label for="image" class="form-label">Upload New Image</label><br>
@@ -40,7 +54,7 @@
             </div>      
     
             <div class="mb-3 col-md-8">
-                <label for="country" class="form-label">Title</label><br>
+                <label for="country" class="form-label">Country</label><br>
                 <input type="text" name="listing[country]" value="<%= listing.country %>" class="form-control" required>
                 <div class="invalid-feedback">Please enter the country name</div>
     

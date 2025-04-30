@@ -8,19 +8,28 @@ main().then(()=>{
     console.log("connected to DB")
 }).catch(err =>{
     console.log(err);
-})
+});
 
-async function main(){
+async function main() {
     await mongoose.connect(mongoURL);
 }
 
 const initDB=async() =>{
-    await Listing.deleteMany({});
-    initData.data=initData.data.map((obj) => ({...obj,owner:"66b7e2ae3bc70502d90317af"}));
-    await Listing.insertMany(initData.data);
-    
-    console.log("data was initialised")
-
+    try {
+        await Listing.deleteMany({});
+        const sampleData = initData.data.map((obj) => ({
+            ...obj,
+            owner: "66b7e2ae3bc70502d90317af",
+            geometry: {
+                type: "Point",
+                coordinates: obj.geometry ? obj.geometry.coordinates : [0, 0]
+            }
+        }));
+        await Listing.insertMany(sampleData);
+        console.log("Data was initialized");
+    } catch (err) {
+        console.error("Error initializing data:", err);
+    }
 };
 
 initDB();

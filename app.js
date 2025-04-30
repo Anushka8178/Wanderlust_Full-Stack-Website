@@ -1,4 +1,4 @@
-if (process.env.NODE_ENV != "production"){
+if (process.env.NODE_ENV != "production") {
     require("dotenv").config();
 }
 
@@ -14,23 +14,28 @@ const reviewRouter = require("./routes/review.js");
 const userRouter = require("./routes/user.js");
 
 const session = require("express-session");
-const MongoStore=require("connect-mongo");
-const passport=require("passport");
-const LocalStrategy=require("passport-local");
-const User=require("./models/user.js");
-
-
+const MongoStore = require("connect-mongo");
+const passport = require("passport");
+const LocalStrategy = require("passport-local");
+const User = require("./models/user.js");
 
 const app = express();
 
-const dbUrl=process.env.ATLASDB_URL;
+// Ensure the database URL is provided
+const dbUrl = process.env.ATLASDB_URL || "mongodb://127.0.0.1:27017/defaultdb"; // Fallback for local dev
+if (!process.env.ATLASDB_URL) {
+    console.error("Error: ATLASDB_URL is not set in environment variables.");
+    process.exit(1);
+}
+
 // Database connection
 mongoose.connect(dbUrl)
     .then(() => {
         console.log("Connected to DB");
     })
     .catch((err) => {
-        console.log("Database connection error:", err);
+        console.error("Database connection error:", err);
+        process.exit(1);
     });
 
 // Middleware
@@ -41,24 +46,25 @@ app.use(methodOverride("_method"));
 app.engine("ejs", ejsMate);
 app.use(express.static(path.join(__dirname, "public")));
 
-const store=MongoStore.create({
-    mongoUrl:dbUrl,
-    crypto:{
-        secret:process.env.SECRET,
+const store = MongoStore.create({
+    mongoUrl: dbUrl,
+    crypto: {
+        secret: process.env.SECRET,
     },
-    touchAfter:24*60*60
+    touchAfter: 24 * 60 * 60, // Prevent frequent session updates
 });
 
-store.on("error",()=>{
-    console.log("ERROR in MONGO SESSION STORE",err);
-})
+store.on("error", (err) => {
+    console.error("ERROR in Mongo Session Store:", err);
+});
+
 const sessionOptions = {
     store,
-    secret:process.env.SECRET,
+    secret: process.env.SECRET || "fallbackSecret", // Fallback secret for development
     resave: false,
     saveUninitialized: true,
     cookie: {
-        expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+        expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
         maxAge: 7 * 24 * 60 * 60 * 1000,
         httpOnly: true,
     },
@@ -67,61 +73,63 @@ const sessionOptions = {
 app.use(session(sessionOptions));
 app.use(flash());
 
+// Passport configuration
 app.use(passport.initialize());
 app.use(passport.session());
 passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
+// Global variables for views
 app.use((req, res, next) => {
     res.locals.success = req.flash("success");
     res.locals.error = req.flash("error");
-    res.locals.currUser=req.user;
+    res.locals.currUser = req.user;
     next();
 });
 
-// app.get("/demouser",async(req,res)=>{
-//     let fakeUser=new User({
-//         email:"student@gmail.com",
-//         username:"delta-student"
-//     });
-//     let registeredUser= await User.register(fakeUser,"helloworld");
-//     res.send(registeredUser);
-// })
-
-// Root route
+// Routes
 app.get("/", (req, res) => {
     res.redirect("/listings");
 });
 
-// Routes for listings and reviews
 app.use("/listings", listingRouter);
 app.use("/listings/:id/reviews", reviewRouter);
 app.use("/", userRouter);
 
-// 404 handler
-
+// Catch-all route for undefined routes
 app.all("*", (req, res, next) => {
     next(new ExpressError(404, "Page not found!!"));
-}); 
+});
 
-
+// Error handling middleware
 app.use((err, req, res, next) => {
-    // console.error(err); // Log the error for debugging
+    console.error(err); // Log error for debugging
+    let { statusCode = 500, message = "Something went wrong!" } = err;
 
-    // Use a default status code if it's not a valid number
-    // let { statusCode = 500, message = "Something went wrong!" } = err;
-    // if (isNaN(statusCode) || statusCode < 100 || statusCode > 599) {
-    //     statusCode = 500;
-    const { statusCode = 500, message = 'Something went wrong!' } = err;
-    res.status(statusCode).json({ error: message });
-    });
+    if (typeof statusCode !== "number" || statusCode < 100 || statusCode > 599) {
+        console.error("Invalid status code detected, defaulting to 500.");
+        statusCode = 500;
+    }
 
-    // Send status code and render error page
-//     res.status(statusCode).render("error.ejs", { message });
-// });
+    // Render error page or send JSON response
+    if (req.accepts("html")) {
+        res.status(statusCode).render("error", { message });
+    } else {
+        res.status(statusCode).json({ error: message });
+    }
+});
 
-
-app.listen(8080, () => {
-    console.log("server is listening to port 8080");
+// Start the server
+const port = 3001;
+const server = app.listen(port, () => {
+    console.log(`Server is listening on port ${port}`);
+}).on('error', (err) => {
+    if (err.code === 'EADDRINUSE') {
+        console.error(`Port ${port} is already in use. Please try a different port.`);
+        process.exit(1);
+    } else {
+        console.error('Server error:', err);
+        process.exit(1);
+    }
 });
