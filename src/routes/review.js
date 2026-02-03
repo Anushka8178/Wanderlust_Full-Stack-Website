@@ -1,7 +1,6 @@
 const express=require("express");
 const router=express.Router({mergeParams:true});
-const ExpressError = require("../ExpressError.js");
-const wrapAsync = require("../wrapAsync.js");
+const { ExpressError, wrapAsync } = require("wanderlust-lib");
 const Review = require("../models/review.js");
 const { Listing } = require("../models/listing.js");
 const {validateReview, isReviewAuthor}=require("../middleware.js");

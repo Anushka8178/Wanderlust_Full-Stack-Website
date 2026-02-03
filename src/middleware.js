@@ -1,6 +1,6 @@
 const { Listing } = require("./models/listing");
 const { listingSchema } = require("./schema.js");
-const ExpressError = require("./ExpressError.js");
+const { ExpressError } = require("wanderlust-lib");
 const { reviewSchema } = require("./schema.js");
 const Review = require("./models/review.js");
 
