@@ -1,6 +1,6 @@
 const Review = require("../models/review.js");
 const { Listing } = require("../models/listing.js");
-const { ExpressError } = require("wanderlust-lib");
+const ExpressError = global.ExpressError;
 
 module.exports.postReview=async (req, res) => {
     try {

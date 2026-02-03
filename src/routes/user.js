@@ -1,7 +1,7 @@
 const express=require("express");
 const router=express.Router();
 const User=require("../models/user.js");
-const { wrapAsync } = require("wanderlust-lib");
+const wrapAsync = global.wrapAsync;
 const passport=require("passport");
 const {saveRedirectUrl}=require("../middleware.js");
 

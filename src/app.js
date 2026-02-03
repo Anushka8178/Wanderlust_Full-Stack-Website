@@ -1,3 +1,15 @@
+// Inline so Render never fails on missing utils/lib (no file or package dependency)
+class ExpressError extends Error {
+    constructor(statusCode, message) {
+        super();
+        this.statusCode = statusCode;
+        this.message = message;
+    }
+}
+const wrapAsync = (fn) => (req, res, next) => fn(req, res, next).catch(next);
+global.ExpressError = ExpressError;
+global.wrapAsync = wrapAsync;
+
 if (process.env.NODE_ENV != "production") {
     require("dotenv").config();
 }
@@ -7,7 +19,6 @@ const mongoose = require("mongoose");
 const path = require("path");
 const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
-const { ExpressError } = require("wanderlust-lib");
 const flash = require("connect-flash");
 const listingRouter = require("./routes/listing.js");
 const reviewRouter = require("./routes/review.js");
