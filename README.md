@@ -24,4 +24,25 @@ Wanderlust is your ultimate travel companion! Inspired by Airbnb, this full-stac
 🗺️ Mapbox SDK: Adds location-based magic.<br><br>
 **Session Management**<br>
 💬 Connect-Flash: Flash messages for user feedback.<br>
-🛡️ Connect-Mongo: Securely stores sessions in MongoDB.<br>
+🛡️ Connect-Mongo: Securely stores sessions in MongoDB.<br><br>
+
+---
+
+## Deploy (Render)
+
+1. **Push your code to GitHub** (ensure `.env` is in `.gitignore` and is not committed).
+
+2. **Sign up at [Render](https://render.com)** and connect your GitHub repo.
+
+3. **New → Web Service** → select this repo. Render will detect Node and use `npm install` and `npm start`.
+
+4. **Set environment variables** in the Render dashboard (Settings → Environment):
+   - `NODE_ENV` = `production`
+   - `ATLASDB_URL` = your MongoDB Atlas connection string
+   - `SECRET` = a long random string for sessions
+   - `CLOUD_NAME`, `CLOUD_API_KEY`, `CLOUD_API_SECRET` = Cloudinary credentials
+   - `MAPTOKEN` = your Mapbox public token
+
+5. **Deploy.** Render will build and run the app; your URL will be like `https://majorproject-xxxx.onrender.com`.
+
+**Note:** On the free tier the app may sleep after inactivity; the first request after sleep can take 30–60 seconds.

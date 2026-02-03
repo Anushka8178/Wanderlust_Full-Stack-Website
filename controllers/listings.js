@@ -123,28 +123,49 @@ module.exports.showListing = async (req, res) => {
 // Create a new listing
 module.exports.createListing = async (req, res) => {
     try {
-        const { category } = req.body.listing;
+        const { category, location } = req.body.listing;
         if (!category) {
             req.flash("error", "Category is required!");
             return res.redirect("/listings/new");
         }
 
-        let response;
-        try {
-            response = await geocodingClient.forwardGeocode({
-                query: req.body.listing.location,
-                limit: 1,
-            }).send();
-        } catch (geoError) {
-            console.error("Geocoding error:", geoError);
-            req.flash("error", "Geocoding failed!");
+        if (!req.file) {
+            console.log("No file uploaded.");
+            req.flash("error", "Image upload failed! Please add an image.");
             return res.redirect("/listings/new");
         }
 
-        if (!req.file) {
-            console.log("No file uploaded.");
-            req.flash("error", "Image upload failed!");
-            return res.redirect("/listings/new");
+        // Default geometry (fallback if geocoding fails)
+        let geometry = {
+            type: "Point",
+            coordinates: [77.2090, 28.6139], // Default: New Delhi
+        };
+
+        // Try geocoding only if we have a token and a location
+        if (mapToken && location && location.trim()) {
+            try {
+                const response = await geocodingClient
+                    .forwardGeocode({
+                        query: location,
+                        limit: 1,
+                    })
+                    .send();
+
+                if (response.body.features && response.body.features.length > 0) {
+                    geometry = response.body.features[0].geometry;
+                } else {
+                    console.warn("Geocoding returned no results for location:", location);
+                }
+            } catch (geoError) {
+                console.error("Geocoding error (using fallback geometry):", geoError);
+            }
+        } else {
+            if (!mapToken) {
+                console.warn("MAPTOKEN is not set. Using fallback geometry.");
+            }
+            if (!location || !location.trim()) {
+                console.warn("No location provided. Using fallback geometry.");
+            }
         }
 
         const url = req.file.path;
@@ -153,7 +174,7 @@ module.exports.createListing = async (req, res) => {
         const newListing = new Listing(req.body.listing);
         newListing.owner = req.user._id;
         newListing.image = { url, filename };
-        newListing.geometry = response.body.features[0].geometry;
+        newListing.geometry = geometry;
 
         await newListing.save();
         req.flash("success", "New Listing Created!");

@@ -21,22 +21,25 @@ const User = require("./models/user.js");
 
 const app = express();
 
-// Ensure the database URL is provided
-const dbUrl = process.env.ATLASDB_URL || "mongodb://127.0.0.1:27017/defaultdb"; // Fallback for local dev
-if (!process.env.ATLASDB_URL) {
-    console.error("Error: ATLASDB_URL is not set in environment variables.");
-    process.exit(1);
-}
+// Decide DB URL based on environment
+const isProduction = process.env.NODE_ENV === "production";
+const dbUrl = isProduction
+    ? process.env.ATLASDB_URL // use Atlas only in production
+    : "mongodb://127.0.0.1:27017/wanderlust"; // always use local Mongo in dev
 
-// Database connection
-mongoose.connect(dbUrl)
-    .then(() => {
-        console.log("Connected to DB");
-    })
-    .catch((err) => {
-        console.error("Database connection error:", err);
-        process.exit(1);
-    });
+// Database connection (never crash the server)
+(async () => {
+    try {
+        if (!dbUrl) {
+            console.warn("No database URL configured. Continuing without DB connection.");
+            return;
+        }
+        await mongoose.connect(dbUrl);
+        console.log("Connected to DB:", dbUrl);
+    } catch (err) {
+        console.error("Database connection error (server will still run):", err.message || err);
+    }
+})();
 
 // Middleware
 app.set("view engine", "ejs");
@@ -120,8 +123,8 @@ app.use((err, req, res, next) => {
     }
 });
 
-// Start the server
-const port = 3001;
+// Start the server (use PORT from env for deployment)
+const port = process.env.PORT || 3001;
 const server = app.listen(port, () => {
     console.log(`Server is listening on port ${port}`);
 }).on('error', (err) => {

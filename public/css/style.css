@@ -2,14 +2,20 @@
 body {
    font-family: "Plus Jakarta Sans", sans-serif !important;
    font-optical-sizing: auto !important;
-   
    font-style: normal !important;
    display: flex;
    flex-direction: column;
    min-height: 100vh;
+   line-height: 1.6;
+   margin: 0;
+   padding: 0;
 }
+
 .container{
    flex: 1;
+   padding-top: 2rem;
+   padding-bottom: 3rem;
+   max-width: 1200px;
 }
 .card-text{
    color: #222222 !important;
@@ -18,6 +24,7 @@ body {
 .navbar {
    height: 5rem;
    background-color: rgb(247, 238, 234);
+   box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
 .fa-snowflake {
@@ -70,15 +77,30 @@ body {
 .listing-card {
    border: none !important;
    margin-bottom: 2rem;
+   border-radius: 1rem;
+   overflow: hidden;
+   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+   transition: transform 0.3s ease, box-shadow 0.3s ease;
+   background: white;
+}
+
+.listing-card:hover {
+   transform: translateY(-5px);
+   box-shadow: 0 4px 16px rgba(0,0,0,0.15);
 }
 
 .card-img-top {
-   border-radius: 1rem !important;
+   border-radius: 1rem 1rem 0 0 !important;
    width: 100% !important;
    object-fit: cover !important;
    height: 20rem; 
-   
+   transition: transform 0.3s ease;
 }
+
+.listing-card:hover .card-img-top {
+   transform: scale(1.05);
+}
+
 .main-img{
    transition: transform .2s ;
 
@@ -89,14 +111,31 @@ body {
 }
 
 .card-body {
-   padding: 1rem !important; /* Add some padding for better spacing */
+   padding: 1.5rem !important;
+}
+
+.show-card .card-body {
+   padding: 2rem !important;
+}
+
+.card-text {
+   margin-bottom: 0.75rem;
+   line-height: 1.6;
+   color: #333;
+}
+
+.card-title {
+   margin-bottom: 0.75rem;
 }
 
 .card-text p {
    font-weight: 400;
+   margin-bottom: 0.5rem;
 }
+
 .listing-link{
    text-decoration: none;
+   color: inherit;
 }
 /* Card Effect */
 /* .card-img-overlay{
@@ -123,20 +162,129 @@ body {
  }
  /* Show Page */
  .show-img{
-   height: 30vh;
+   height: 50vh;
+   object-fit: cover;
+   width: 100%;
+   border-radius: 1rem 1rem 0 0;
  }
-.btns{
-   display: flex !important;
-   
-}
-.show-card{
+
+.show-card {
    padding-left: 0 !important;
    padding-right: 0 !important;
+   border-radius: 1rem;
+   overflow: hidden;
+   box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+   margin-bottom: 2rem;
+   border: 1px solid #e9ecef;
 }
+
+.btns{
+   display: flex !important;
+   gap: 1rem;
+   margin-bottom: 2rem;
+}
+
+.review {
+   margin-top: 1rem;
+   padding: 2.5rem;
+   background: #f8f9fa;
+   border-radius: 1rem;
+   border: 1px solid #e9ecef;
+}
+
+.review .card {
+   margin-bottom: 0;
+   border-radius: 0.5rem;
+   box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+   border: 1px solid #e9ecef;
+}
+
 /* Map */
-
 #map { 
-   height:400px;
-   
-   width: 60vh; }
+   height: 450px;
+   width: 100%;
+   border-radius: 1rem;
+   overflow: hidden;
+   box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+   margin-top: 1rem;
+   border: 1px solid #e9ecef;
+}
 
+/* Smooth transitions */
+* {
+   transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.btn {
+   transition: all 0.3s ease;
+}
+
+.btn:hover {
+   transform: translateY(-2px);
+   box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+/* Success animation for bookings/reviews */
+@keyframes successPulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+.alert-success {
+    animation: slideInDown 0.5s ease-out, successPulse 0.6s ease-out 0.5s;
+}
+
+@keyframes slideInDown {
+    from {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Form Controls */
+.form-control {
+   border-radius: 0.5rem;
+   border: 1px solid #ced4da;
+   padding: 0.75rem 1rem;
+   transition: all 0.3s ease;
+   font-size: 1rem;
+}
+
+.form-control:focus {
+   border-color: rgb(219, 13, 10);
+   box-shadow: 0 0 0 0.2rem rgba(219, 13, 10, 0.15);
+   outline: none;
+}
+
+.form-label {
+   font-weight: 600;
+   color: #333;
+   margin-bottom: 0.75rem;
+   display: block;
+}
+
+textarea.form-control {
+   resize: vertical;
+   min-height: 120px;
+}
+
+/* Spacing improvements */
+h1, h2, h3, h4, h5, h6 {
+   margin-bottom: 1rem;
+}
+
+hr {
+   margin: 2rem 0;
+   opacity: 0.2;
+}
