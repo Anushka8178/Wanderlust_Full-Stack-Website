@@ -1,5 +1,6 @@
 # Render Blueprint - deploy as Web Service
 # Docs: https://render.com/docs/blueprint-spec
+# Important: leave "Root Directory" blank so the app runs from repo root.
 services:
   - type: web
     name: majorproject
