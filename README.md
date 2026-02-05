@@ -38,10 +38,12 @@ Wanderlust is your ultimate travel companion! Inspired by Airbnb, this full-stac
 
 4. **Set environment variables** in the Render dashboard (Settings → Environment):
    - `NODE_ENV` = `production`
-   - `ATLASDB_URL` = your MongoDB Atlas connection string
+   - `ATLASDB_URL` = your MongoDB Atlas connection string (use standard connection string, not SRV)
    - `SECRET` = a long random string for sessions
    - `CLOUD_NAME`, `CLOUD_API_KEY`, `CLOUD_API_SECRET` = Cloudinary credentials
    - `MAPTOKEN` = your Mapbox public token
+   - `RAZORPAY_KEY_ID` = your Razorpay Key ID
+   - `RAZORPAY_KEY_SECRET` = your Razorpay Key Secret
 
 5. **Deploy.** Render will build and run the app; your URL will be like `https://majorproject-xxxx.onrender.com`.
 

@@ -60,7 +60,13 @@ const listingSchema=new Schema({
     unavailableDates: [{
         start: Date,
         end: Date
-    }]
+    }],
+    roomLimit: {
+        type: Number,
+        default: 1,
+        min: 1,
+        required: true
+    }
 });
 
 // Add pre-save middleware to ensure category is valid

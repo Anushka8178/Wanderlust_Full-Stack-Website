@@ -18,23 +18,51 @@
                 <div class="card listing-card show-card">
                     <img src="<%= listing.image.url || 'https://plus.unsplash.com/premium_photo-1689609950112-d66095626efb?w=1000&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8aG9tZXxlbnwwfHwwfHx8MA%3D%3D' %>" class="card-img-top show-img" alt="image">
                     <div class="card-body p-4">
-                <p class="card-text mb-2">
-                    <strong>Hosted by:</strong> <i><%= listing.owner.username %></i>
-                </p>
-                <p class="card-text mb-3">
-                    <%= listing.description %>
-                </p>
-                <div class="d-flex flex-wrap gap-3 mb-3">
-                    <p class="card-text mb-0">
-                        <strong>&#8377;<%= listing.price.toLocaleString("en-IN") %></strong> / night
-                    </p>
-                    <p class="card-text mb-0">
-                        <span class="badge bg-secondary"><%= listing.category %></span>
-                    </p>
-                </div>
-                <p class="card-text mb-0">
-                    <i class="fa-solid fa-location-dot"></i> <%= listing.location %>, <%= listing.country %>
-                </p>
+                        <p class="card-text mb-2">
+                            <strong>Hosted by:</strong> <i><%= listing.owner.username %></i>
+                        </p>
+                        <p class="card-text mb-3">
+                            <%= listing.description %>
+                        </p>
+                        <div class="d-flex flex-wrap gap-3 mb-3 align-items-center">
+                            <p class="card-text mb-0">
+                                <strong>&#8377;<%= listing.price.toLocaleString("en-IN") %></strong> / night
+                            </p>
+                            <p class="card-text mb-0">
+                                <span class="badge bg-secondary"><%= listing.category %></span>
+                            </p>
+                        </div>
+                        <p class="card-text mb-3">
+                            <i class="fa-solid fa-location-dot"></i> <%= listing.location %>, <%= listing.country %>
+                        </p>
+                        <p class="card-text mb-3">
+                            <i class="fa-solid fa-door-open"></i> 
+                            <strong><%= roomLimit %></strong> room(s) total
+                            <small class="text-muted">(Availability depends on selected dates)</small>
+                        </p>
+
+                        <% if(currUser && !listing.owner._id.equals(currUser._id)) { %>
+                            <div class="mt-3">
+                                <h5 class="mb-3">Book Your Stay</h5>
+                                <div class="row g-3 mb-3">
+                                    <div class="col-md-4">
+                                        <label for="checkInDate" class="form-label">Check-in</label>
+                                        <input type="date" class="form-control" id="checkInDate" name="checkIn" required>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="checkOutDate" class="form-label">Check-out</label>
+                                        <input type="date" class="form-control" id="checkOutDate" name="checkOut" required>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="guests" class="form-label">Guests</label>
+                                        <input type="number" class="form-control" id="guests" name="guests" value="1" min="1" required>
+                                    </div>
+                                </div>
+                                <button type="button" id="bookNowBtn" class="btn btn-dark w-100">
+                                    Book Now &amp; Pay Securely
+                                </button>
+                            </div>
+                        <% } %>
 
                     </div>
                 </div>
@@ -169,26 +197,271 @@
             </div>
         </div>
         
-<script src="/js/map.js">
+<script src="/js/map.js"></script>
 
-</script>
-    
+<!-- Razorpay Checkout Script -->
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
 <script>
-    // Set minimum date for start and end dates
-    const today = new Date().toISOString().split('T')[0];
-    const startDateInput = document.getElementById('startDate');
-    const endDateInput = document.getElementById('endDate');
-    
-    if (startDateInput && endDateInput) {
-        startDateInput.min = today;
+    // Razorpay Payment Integration
+    <% if(currUser && !listing.owner._id.equals(currUser._id)) { %>
+    // Wait for DOM and Razorpay script to load
+    window.addEventListener('load', function() {
+        // Check if Razorpay is loaded
+        if (typeof Razorpay === 'undefined') {
+            console.error('Razorpay SDK not loaded. Please check the script tag.');
+            const bookNowBtn = document.getElementById('bookNowBtn');
+            if (bookNowBtn) {
+                bookNowBtn.disabled = true;
+                bookNowBtn.textContent = 'Payment unavailable';
+            }
+            return;
+        }
         
-        startDateInput.addEventListener('change', () => {
-            endDateInput.min = startDateInput.value;
-            if (endDateInput.value && endDateInput.value < startDateInput.value) {
-                endDateInput.value = startDateInput.value;
+        console.log('Razorpay SDK loaded successfully');
+        
+        const bookNowBtn = document.getElementById('bookNowBtn');
+        if (!bookNowBtn) {
+            console.error('Book Now button not found');
+            return;
+        }
+        
+        bookNowBtn.addEventListener('click', async function(e) {
+            e.preventDefault();
+            const listingId = '<%= listing._id %>';
+            const button = this;
+            const originalText = button.textContent;
+            
+            // Disable button and show loading
+            button.disabled = true;
+            button.textContent = 'Processing...';
+            
+            try {
+                // Get booking details
+                const checkIn = document.getElementById('checkInDate').value;
+                const checkOut = document.getElementById('checkOutDate').value;
+                const guests = document.getElementById('guests').value || 1;
+                
+                if (!checkIn || !checkOut) {
+                    alert('Please select check-in and check-out dates');
+                    button.disabled = false;
+                    button.textContent = originalText;
+                    return;
+                }
+                
+                if (new Date(checkOut) <= new Date(checkIn)) {
+                    alert('Check-out date must be after check-in date');
+                    button.disabled = false;
+                    button.textContent = originalText;
+                    return;
+                }
+                
+                console.log('Creating order for listing:', listingId);
+                
+                // Create order
+                const response = await fetch(`/listings/${listingId}/create-order`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'same-origin',
+                    body: JSON.stringify({ checkIn, checkOut, guests })
+                });
+                
+                const responseData = await response.json();
+                
+                if (!response.ok) {
+                    console.error('Order creation failed:', responseData);
+                    const errorMsg = responseData.error || 'Failed to create order';
+                    
+                    // Check if it's a room availability error
+                    if (errorMsg.includes('room') || errorMsg.includes('booked') || errorMsg.includes('already booked')) {
+                        alert(errorMsg);
+                    } else {
+                        alert('Failed to create payment order: ' + errorMsg);
+                    }
+                    button.disabled = false;
+                    button.textContent = originalText;
+                    return;
+                }
+                
+                console.log('Order created:', responseData);
+                
+                // Razorpay options
+                const options = {
+                    key: responseData.keyId,
+                    amount: responseData.amount,
+                    currency: responseData.currency,
+                    name: 'Wanderlust',
+                    description: '<%= listing.title %>',
+                    order_id: responseData.orderId,
+                    handler: function(response) {
+                        console.log('=== RAZORPAY PAYMENT SUCCESS ===');
+                        console.log('Full Razorpay response object:', response);
+                        console.log('Response keys:', Object.keys(response));
+                        
+                        // Extract payment details - try all possible field names
+                        const orderId = response.razorpay_order_id || response.order_id || response.razorpayOrderId;
+                        const paymentId = response.razorpay_payment_id || response.payment_id || response.razorpayPaymentId;
+                        const signature = response.razorpay_signature || response.signature || response.razorpaySignature;
+                        
+                        console.log('Extracted values:', {
+                            orderId: orderId,
+                            paymentId: paymentId,
+                            hasSignature: !!signature,
+                            checkIn: checkIn,
+                            checkOut: checkOut,
+                            guests: guests
+                        });
+                        
+                        if (!orderId || !paymentId) {
+                            console.error('CRITICAL: Missing payment IDs!', {
+                                orderId: orderId,
+                                paymentId: paymentId,
+                                fullResponse: response
+                            });
+                            alert('ERROR: Payment succeeded but details missing. Payment ID: ' + (paymentId || 'UNKNOWN') + '\n\nPlease contact support immediately!');
+                            return;
+                        }
+                        
+                        const paymentData = {
+                            razorpay_order_id: orderId,
+                            razorpay_payment_id: paymentId,
+                            razorpay_signature: signature,
+                            checkIn: checkIn,
+                            checkOut: checkOut,
+                            guests: guests
+                        };
+                        
+                        console.log('Sending to server:', paymentData);
+                        
+                        // Show loading state
+                        button.disabled = true;
+                        button.textContent = 'Verifying payment...';
+                        
+                        // Verify payment on server (async operation)
+                        fetch(`/listings/${listingId}/verify-payment`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            credentials: 'same-origin',
+                            body: JSON.stringify(paymentData)
+                        })
+                        .then(async (verifyResponse) => {
+                            console.log('Server response status:', verifyResponse.status);
+                            let verifyData;
+                            try {
+                                verifyData = await verifyResponse.json();
+                            } catch (jsonErr) {
+                                console.error('Failed to parse JSON response:', jsonErr);
+                                const text = await verifyResponse.text();
+                                console.error('Response text:', text);
+                                throw new Error('Invalid server response: ' + text.substring(0, 100));
+                            }
+                            
+                            console.log('Verification response:', verifyData);
+                            
+                            if (verifyResponse.ok && verifyData.success) {
+                                // Redirect to confirmation page
+                                console.log('✓ SUCCESS! Redirecting to:', verifyData.redirectUrl);
+                                window.location.href = verifyData.redirectUrl;
+                            } else {
+                                console.error('✗ Payment verification failed:', verifyData);
+                                const errorMsg = verifyData.error || 'Unknown error';
+                                
+                                // Check if it's a room availability error
+                                if (errorMsg.includes('room') || errorMsg.includes('booked') || errorMsg.includes('already booked')) {
+                                    alert(errorMsg + '\n\nYour payment will be refunded. Please try booking different dates.');
+                                } else {
+                                    alert('Payment verification failed: ' + errorMsg + '\n\nYour payment was successful (Payment ID: ' + paymentId + '). Please contact support.');
+                                }
+                                button.disabled = false;
+                                button.textContent = originalText;
+                                window.location.href = `/listings/${listingId}?error=true`;
+                            }
+                        })
+                        .catch((err) => {
+                            console.error('✗ Verification error:', err);
+                            alert('Payment verification error: ' + err.message + '\n\nYour payment was successful (Payment ID: ' + (paymentId || 'UNKNOWN') + '). Please contact support immediately!');
+                            window.location.href = `/listings/${listingId}?error=true`;
+                        });
+                    },
+                    prefill: {
+                        name: '<%= currUser.username || "" %>',
+                        email: '<%= (currUser.email || "").replace(/"/g, "&quot;") %>'
+                    },
+                    theme: {
+                        color: '#000000'
+                    },
+                    modal: {
+                        ondismiss: function() {
+                            button.disabled = false;
+                            button.textContent = originalText;
+                        }
+                    }
+                };
+                
+                const razorpay = new Razorpay(options);
+                razorpay.on('payment.failed', function(response) {
+                    console.error('Payment failed:', response);
+                    alert('Payment failed: ' + (response.error.description || 'Please try again.'));
+                    button.disabled = false;
+                    button.textContent = originalText;
+                });
+                
+                // Handle modal close/cancel
+                razorpay.on('modal.closed', function() {
+                    console.log('Payment modal closed');
+                    button.disabled = false;
+                    button.textContent = originalText;
+                });
+                
+                razorpay.open();
+                
+            } catch (error) {
+                console.error('Payment error:', error);
+                alert('Failed to initiate payment: ' + error.message);
+                button.disabled = false;
+                button.textContent = originalText;
             }
         });
-    }
+    });
+    <% } %>
+    
+    // Set minimum date for booking dates
+    (function() {
+        const today = new Date().toISOString().split('T')[0];
+        const checkInInput = document.getElementById('checkInDate');
+        const checkOutInput = document.getElementById('checkOutDate');
+        const startDateInput = document.getElementById('startDate');
+        const endDateInput = document.getElementById('endDate');
+        
+        if (checkInInput && checkOutInput) {
+            checkInInput.min = today;
+            
+            checkInInput.addEventListener('change', () => {
+                const checkInDate = checkInInput.value;
+                checkOutInput.min = checkInDate;
+                if (checkOutInput.value && checkOutInput.value <= checkInDate) {
+                    const nextDay = new Date(checkInDate);
+                    nextDay.setDate(nextDay.getDate() + 1);
+                    checkOutInput.value = nextDay.toISOString().split('T')[0];
+                }
+            });
+        }
+        
+        if (startDateInput && endDateInput) {
+            startDateInput.min = today;
+            
+            startDateInput.addEventListener('change', () => {
+                endDateInput.min = startDateInput.value;
+                if (endDateInput.value && endDateInput.value < startDateInput.value) {
+                    endDateInput.value = startDateInput.value;
+                }
+            });
+        }
+    })();
 </script>
     
     

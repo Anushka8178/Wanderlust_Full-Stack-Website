@@ -1,0 +1,76 @@
+<% layout("/layouts/boilerplate") %>
+
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-12">
+            <h2 class="mb-4">My Bookings</h2>
+            
+            <% if(bookings.length === 0) { %>
+                <div class="alert alert-info">
+                    <h5>No bookings yet</h5>
+                    <p>Start exploring amazing places to stay!</p>
+                    <a href="/listings" class="btn btn-dark">Browse Listings</a>
+                </div>
+            <% } else { %>
+                <div class="row g-4">
+                    <% bookings.forEach(booking => { %>
+                        <div class="col-md-6 col-lg-4">
+                            <div class="card h-100 shadow-sm">
+                                <img src="<%= booking.listing.image.url || 'https://plus.unsplash.com/premium_photo-1689609950112-d66095626efb?w=1000&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8aG9tZXxlbnwwfHwwfHx8MA%3D%3D' %>" 
+                                     class="card-img-top" 
+                                     alt="<%= booking.listing.title %>"
+                                     style="height: 200px; object-fit: cover;">
+                                <div class="card-body">
+                                    <h5 class="card-title"><%= booking.listing.title %></h5>
+                                    <p class="text-muted mb-2">
+                                        <i class="fa-solid fa-location-dot"></i> 
+                                        <%= booking.listing.location %>, <%= booking.listing.country %>
+                                    </p>
+                                    
+                                    <hr>
+                                    
+                                    <div class="mb-2">
+                                        <strong>Check-in:</strong> 
+                                        <%= new Date(booking.checkIn).toLocaleDateString('en-IN', { year: 'numeric', month: 'short', day: 'numeric' }) %>
+                                    </div>
+                                    <div class="mb-2">
+                                        <strong>Check-out:</strong> 
+                                        <%= new Date(booking.checkOut).toLocaleDateString('en-IN', { year: 'numeric', month: 'short', day: 'numeric' }) %>
+                                    </div>
+                                    <div class="mb-2">
+                                        <strong>Guests:</strong> <%= booking.guests %>
+                                    </div>
+                                    <% 
+                                        const nights = Math.ceil((new Date(booking.checkOut) - new Date(booking.checkIn)) / (1000 * 60 * 60 * 24));
+                                    %>
+                                    <div class="mb-3">
+                                        <strong>Nights:</strong> <%= nights %>
+                                    </div>
+                                    
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <span class="badge bg-<%= booking.status === 'confirmed' ? 'success' : booking.status === 'cancelled' ? 'danger' : 'warning' %>">
+                                            <%= booking.status.charAt(0).toUpperCase() + booking.status.slice(1) %>
+                                        </span>
+                                        <h5 class="mb-0">₹<%= booking.totalAmount.toLocaleString("en-IN") %></h5>
+                                    </div>
+                                    
+                                    <div class="d-grid gap-2">
+                                        <a href="/bookings/<%= booking._id %>/confirmation" class="btn btn-outline-dark btn-sm">
+                                            View Details
+                                        </a>
+                                        <a href="/listings/<%= booking.listing._id %>" class="btn btn-outline-secondary btn-sm">
+                                            View Listing
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="card-footer text-muted">
+                                    <small>Booked on <%= new Date(booking.createdAt).toLocaleDateString('en-IN', { year: 'numeric', month: 'short', day: 'numeric' }) %></small>
+                                </div>
+                            </div>
+                        </div>
+                    <% }); %>
+                </div>
+            <% } %>
+        </div>
+    </div>
+</div>

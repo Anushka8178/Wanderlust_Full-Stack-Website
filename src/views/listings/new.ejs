@@ -67,6 +67,13 @@
                     <div class="invalid-feedback">Please enter a valid location</div>
                 </div>
 
+                <div class="mb-3">
+                    <label for="roomLimit" class="form-label">Number of Rooms Available</label><br>
+                    <input type="number" name="listing[roomLimit]" placeholder="1" class="form-control" min="1" value="1" required>
+                    <small class="form-text text-muted">Maximum number of rooms/units available for booking</small>
+                    <div class="invalid-feedback">Please enter a valid number (minimum 1)</div>
+                </div>
+
                 <button class="btn btn-dark add-btn mt-2">Add</button>
                 <br>
                 <br>

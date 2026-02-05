@@ -46,15 +46,16 @@ const dbUrl = isProduction
             return;
         }
         await mongoose.connect(dbUrl);
-        console.log("Connected to DB:", dbUrl);
+        console.log("Connected to DB");
     } catch (err) {
         console.error("Database connection error (server will still run):", err.message || err);
     }
-})();
+})().catch(() => {}); // prevent any unhandled rejection from crashing the process
 
 // Middleware
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
+app.use(express.json()); // Parse JSON request bodies
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride("_method"));
 app.engine("ejs", ejsMate);
@@ -109,21 +110,31 @@ app.get("/", (req, res) => {
 
 app.use("/listings", listingRouter);
 app.use("/listings/:id/reviews", reviewRouter);
+app.use("/bookings", require("./routes/booking.js"));
 app.use("/", userRouter);
 
 // Catch-all route for undefined routes
 app.all("*", (req, res, next) => {
+    // Skip logging for common non-critical requests
+    const skipLogging = ["/favicon.ico", "/robots.txt", "/apple-touch-icon.png"].includes(req.path);
+    if (!skipLogging) {
+        console.log(`404: ${req.method} ${req.path}`);
+    }
     next(new ExpressError(404, "Page not found!!"));
 });
 
 // Error handling middleware
 app.use((err, req, res, next) => {
-    console.error(err); // Log error for debugging
     let { statusCode = 500, message = "Something went wrong!" } = err;
 
     if (typeof statusCode !== "number" || statusCode < 100 || statusCode > 599) {
         console.error("Invalid status code detected, defaulting to 500.");
         statusCode = 500;
+    }
+
+    // Only log full error details for non-404 errors
+    if (statusCode !== 404) {
+        console.error("Error:", err);
     }
 
     // Render error page or send JSON response

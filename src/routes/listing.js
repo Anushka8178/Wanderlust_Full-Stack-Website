@@ -19,10 +19,13 @@ router
 // New Route
 router.get("/new",isLoggedIn, listingController.renderNewForm);
 
+// Razorpay payment routes (must be before /:id route)
+router.post("/:id/create-order", isLoggedIn, wrapAsync(listingController.createOrder));
+router.post("/:id/verify-payment", isLoggedIn, wrapAsync(listingController.verifyPayment));
+
 router
 .route("/:id")
 .get(wrapAsync(listingController.showListing))
-
 .put(isLoggedIn,isOwner,upload.single('listing[image]'), validateListing, wrapAsync(listingController.updateListing))
 .delete(isLoggedIn,isOwner, wrapAsync(listingController.destroyListing));
 

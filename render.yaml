@@ -12,3 +12,4 @@ services:
         value: production
       # Add these in Render Dashboard -> Environment (never commit real values):
       # ATLASDB_URL, SECRET, CLOUD_NAME, CLOUD_API_KEY, CLOUD_API_SECRET, MAPTOKEN
+      # RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET
