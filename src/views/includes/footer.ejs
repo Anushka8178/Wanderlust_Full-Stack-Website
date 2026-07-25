@@ -1,18 +1,72 @@
+<style>
+    footer {
+        background-color: #f7f7f7;
+        border-top: 1px solid #EBEBEB;
+        padding: 2.5rem 0;
+        margin-top: 4rem;
+    }
+    .f-info {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+    }
+    .f-info-socials {
+        display: flex;
+        gap: 1.25rem;
+    }
+    .f-info-socials i {
+        font-size: 1.35rem;
+        color: #484848;
+        transition: transform 0.2s ease, color 0.2s ease;
+        cursor: pointer;
+    }
+    .f-info-socials i:hover {
+        transform: translateY(-3px);
+        color: #fe424d;
+    }
+    .f-info-brand {
+        font-size: 0.9rem;
+        color: #717171;
+        font-weight: 500;
+    }
+    .f-info-links {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+    }
+    .f-info-links a {
+        text-decoration: none;
+        color: #717171;
+        font-size: 0.88rem;
+        transition: color 0.2s ease;
+    }
+    .f-info-links a:hover {
+        color: #fe424d;
+    }
+    .f-info-dot {
+        color: #b0b0b0;
+        font-size: 0.75rem;
+    }
+</style>
+
 <footer>
-    <div class="f-info sticky-bottom">
-        <div class="f-info-socials">
-            <i class="fa-brands fa-square-facebook"></i>
-            <i class="fa-brands fa-square-instagram"></i>
-            <i class="fa-brands fa-square-whatsapp"></i>
-            <i class="fa-brands fa-square-x-twitter"></i>
-
+    <div class="container max-w-7xl mx-auto px-3">
+        <div class="f-info">
+            <div class="f-info-socials">
+                <i class="fa-brands fa-facebook"></i>
+                <i class="fa-brands fa-instagram"></i>
+                <i class="fa-brands fa-whatsapp"></i>
+                <i class="fa-brands fa-x-twitter"></i>
+            </div>
+            <div class="f-info-brand">&copy; <%= new Date().getFullYear() %> WanderLust Private Limited. All rights reserved.</div>
+            <div class="f-info-links">
+                <a href="/privacy">Privacy Policy</a>
+                <span class="f-info-dot">•</span>
+                <a href="/terms">Terms of Service</a>
+                <span class="f-info-dot">•</span>
+                <a href="/company/details">Company Details</a>
+            </div>
         </div>
-        <div class="f-info-brand">&copy; WanderLust Private Limited</div>
-        <div class="f-info-links">
-            <a href="/privacy">Privacy</a>
-            <a href="/terms">Terms</a>
-        </div>
-
     </div>
-    
 </footer>

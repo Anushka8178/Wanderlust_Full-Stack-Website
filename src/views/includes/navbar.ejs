@@ -57,65 +57,194 @@
 </style>
 
 
-<nav class="navbar navbar-expand-md bg-body-light border-bottom sticky-top">
-    <div class="container-fluid">
-      <a class="navbar-brand" href="/listings"><i class="fa-solid fa-snowflake"></i></a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-        <div class="navbar-nav">
+<style>
+  .navbar {
+    background: rgba(255, 255, 255, 0.95) !important;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    padding: 0.75rem 1.5rem;
+  }
+  .navbar-brand {
+    font-weight: 700;
+    font-size: 1.35rem;
+    color: #fe424d !important;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+  }
+  .navbar-brand i {
+    font-size: 1.75rem;
+    color: #fe424d;
+    transition: transform 0.3s ease;
+  }
+  .navbar-brand:hover i {
+    transform: rotate(45deg);
+  }
+  .search-pill-container {
+    background: #ffffff;
+    border: 1px solid #DDDDDD;
+    border-radius: 40px;
+    padding: 0.25rem 0.5rem 0.25rem 1rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    transition: box-shadow 0.3s ease, border-color 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .search-pill-container:hover, .search-pill-container:focus-within {
+    box-shadow: 0 4px 14px rgba(0,0,0,0.12);
+    border-color: #b0b0b0;
+  }
+  .search-input-field {
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #222;
+    background: transparent;
+    padding: 0.2rem 0.5rem;
+  }
+  .search-input-field::placeholder {
+    color: #717171;
+  }
+  .date-input-field {
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+    font-size: 0.82rem;
+    color: #717171;
+    background: transparent;
+    max-width: 8.5rem;
+    padding: 0.2rem 0.3rem;
+  }
+  .search-divider {
+    height: 1.5rem;
+    width: 1px;
+    background-color: #DDDDDD;
+  }
+  .btn-search-pill {
+    background: linear-gradient(135deg, #FF385C 0%, #E61E4D 100%);
+    color: #ffffff !important;
+    border: none;
+    border-radius: 50px;
+    padding: 0.5rem 1.25rem;
+    font-weight: 600;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+    cursor: pointer;
+  }
+  .btn-search-pill:hover {
+    transform: scale(1.03);
+    opacity: 0.95;
+    color: #ffffff;
+  }
+  .nav-pill-link {
+    font-weight: 600 !important;
+    color: #222222 !important;
+    padding: 0.5rem 1rem !important;
+    border-radius: 25px;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    text-decoration: none;
+    font-size: 0.9rem;
+  }
+  .nav-pill-link:hover {
+    background-color: #f7f7f7 !important;
+    color: #fe424d !important;
+  }
+  .host-btn {
+    border: 1px solid #dddddd;
+    border-radius: 25px;
+  }
 
-          <a class="nav-link" href="/listings">Explore</a>
-        </div>
+  @media (max-width: 991px) {
+    .search-pill-container {
+      flex-direction: column;
+      border-radius: 16px;
+      padding: 0.75rem;
+      width: 100%;
+    }
+    .search-divider {
+      display: none;
+    }
+    .date-input-field {
+      max-width: 100%;
+      width: 100%;
+    }
+    .btn-search-pill {
+      width: 100%;
+      justify-content: center;
+      margin-top: 0.5rem;
+    }
+  }
+</style>
 
-        
-        <div class="navbar-nav ms-auto">
-          <form class="d-flex search-form" role="search" action="/listings" method="GET">
-            <input class="form-control me-2 search-input" 
+<nav class="navbar navbar-expand-lg border-bottom sticky-top">
+  <div class="container-fluid max-w-7xl mx-auto px-3">
+    <a class="navbar-brand" href="/listings">
+      <i class="fa-solid fa-compass"></i>
+      <span>WanderLust</span>
+    </a>
+
+    <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+      <!-- Search Bar -->
+      <div class="mx-auto my-2 my-lg-0">
+        <form class="d-flex search-form" role="search" action="/listings" method="GET">
+          <div class="search-pill-container">
+            <input class="form-control search-input-field" 
                    type="search" 
                    name="search" 
                    placeholder="Search destinations, properties..." 
                    value="<%= typeof searchQuery !== 'undefined' ? searchQuery : '' %>"
                    autocomplete="off">
-            <input class="form-control me-1 date-input" 
+            <div class="search-divider"></div>
+            <input class="form-control date-input-field" 
                    type="date" 
                    name="checkin" 
-                   placeholder="Check-in" 
+                   title="Check-in Date"
                    value="<%= typeof checkin !== 'undefined' ? checkin : '' %>">
-            <input class="form-control me-1 date-input" 
+            <div class="search-divider"></div>
+            <input class="form-control date-input-field" 
                    type="date" 
                    name="checkout" 
-                   placeholder="Check-out" 
+                   title="Check-out Date"
                    value="<%= typeof checkout !== 'undefined' ? checkout : '' %>">
-            <button class="btn btn-search" type="submit">
-              <i class="fa-solid fa-magnifying-glass"></i> Search
+            <button class="btn btn-search-pill" type="submit">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              <span>Search</span>
             </button>
-          </form>
-        </div>
-
-        
-
-        <div class="navbar-nav ms-auto">
-        <a class="nav-link" href="/listings/new">Airbnb your home</a>
-
-        <% if(!currUser) { %>
-          <a class="nav-link "  href="/signup"><b>SignUp</b></a>
-          <a class="nav-link" href="/login"><b>Login</b></a>
-          <% } %>
-          <% if(currUser) { %>
-          <a class="nav-link" href="/bookings/my-bookings"><b>My Bookings</b></a>
-          <a class="nav-link" href="/logout"><b>Logout</b></a>
-          <% } %>
-        </div>
-        </div>
-
-
+          </div>
+        </form>
       </div>
 
-      
+      <!-- Right Navigation Links -->
+      <div class="navbar-nav align-items-center gap-1">
+        <a class="nav-pill-link host-btn me-2" href="/listings/new">
+          <i class="fa-solid fa-plus me-1 text-danger"></i> Airbnb your home
+        </a>
+
+        <% if(!currUser) { %>
+          <a class="nav-pill-link" href="/signup">Sign Up</a>
+          <a class="nav-pill-link" href="/login">Log In</a>
+        <% } %>
+        <% if(currUser) { %>
+          <a class="nav-pill-link" href="/bookings/my-bookings">
+            <i class="fa-solid fa-suitcase me-1"></i> My Bookings
+          </a>
+          <a class="nav-pill-link text-danger" href="/logout">Log Out</a>
+        <% } %>
+      </div>
     </div>
-  </nav>
+  </div>
+</nav>
 
 <script>
     // Set minimum date for check-in and check-out

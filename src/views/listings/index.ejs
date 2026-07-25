@@ -1,153 +1,280 @@
 
 <% layout("/layouts/boilerplate") %>
 <style>
-    .filter{
-        text-align: center;
-        margin-right: 1.5rem;
-        margin-bottom: 1rem;
-        opacity: 0.7;
-        transition: all 0.3s ease;
-        padding: 0.75rem 1.25rem;
-        border-radius: 0.75rem;
-        background: white;
-        border: 1px solid #e9ecef;
-    }
-    .filter:hover{
-        opacity: 1;
-        cursor: pointer;
-        background: rgba(219, 13, 10, 0.1);
-        transform: translateY(-2px);
-    }
-    #filters{
+    #filters-container {
         display: flex;
-        flex-wrap: wrap;
         align-items: center;
-        margin-bottom: 1rem;
-        padding: 1rem 0;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        padding: 0.5rem 0;
+        overflow-x: auto;
+        scrollbar-width: none;
     }
-    .filter p{
-        font-size: 0.8rem;
-        margin: 0.25rem 0 0 0;
-    }
-    .tax-info{
+    #filters-container::-webkit-scrollbar {
         display: none;
     }
-    .tax-toggle{
-        border: 1.5px solid black;
-        border-radius: 1rem;
-        height: 3.2rem;
-        padding: 1rem;
+    .filters-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        flex: 1;
+        overflow-x: auto;
+        white-space: nowrap;
+        padding-bottom: 0.25rem;
+    }
+    .filter-link {
+        text-decoration: none !important;
+        color: #717171 !important;
+    }
+    .filter {
+        text-align: center;
+        opacity: 0.75;
+        transition: all 0.25s ease;
+        padding: 0.6rem 1.1rem;
+        border-radius: 12px;
+        background: #ffffff;
+        border: 1px solid #EBEBEB;
+        display: inline-flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-width: 90px;
+        cursor: pointer;
+    }
+    .filter i {
+        font-size: 1.2rem;
+        margin-bottom: 0.35rem;
+        color: #484848;
+    }
+    .filter p {
+        font-size: 0.78rem;
+        margin: 0;
+        font-weight: 600;
+    }
+    .filter-link.active .filter, .filter-link:hover .filter {
+        opacity: 1;
+        border-color: #fe424d;
+        color: #fe424d !important;
+        background: rgba(254, 66, 77, 0.04);
+        transform: translateY(-2px);
+    }
+    .filter-link.active .filter i, .filter-link:hover .filter i {
+        color: #fe424d;
+    }
+    .tax-toggle {
+        border: 1px solid #DDDDDD;
+        border-radius: 16px;
+        padding: 0.75rem 1.25rem;
         display: flex;
         align-items: center;
         font-weight: 600;
-        font-size: small;
+        font-size: 0.85rem;
+        background: #ffffff;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        white-space: nowrap;
         margin-left: auto;
     }
+    .tax-info {
+        display: none;
+    }
+    .price-without-tax {
+        display: inline;
+    }
+    .price-with-tax {
+        display: none;
+        color: #fe424d;
+        font-weight: 700;
+    }
+    .listing-card {
+        border: none !important;
+        border-radius: 16px !important;
+        overflow: hidden;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+        transition: transform 0.3s cubic-bezier(0.165, 0.84, 0.44, 1), box-shadow 0.3s ease;
+        background: #ffffff;
+    }
+    .listing-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 12px 28px rgba(0,0,0,0.12);
+    }
+    .card-img-top {
+        border-radius: 16px 16px 0 0 !important;
+        height: 18rem !important;
+        object-fit: cover;
+        transition: transform 0.4s ease;
+    }
+    .listing-card:hover .card-img-top {
+        transform: scale(1.04);
+    }
+    .card-category-badge {
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(4px);
+        color: #222;
+        font-weight: 600;
+        font-size: 0.75rem;
+        padding: 0.3rem 0.6rem;
+        border-radius: 20px;
+    }
 </style>
+
 <body>
-    <div class="container">
-        <div class="mt-4 mb-4">
-            <h3 class="mb-4">All Listings</h3>
-            <div id="filters">
-            <div class="filter">
-                <div><i class="fa-solid fa-fire" ></i></div>
-                <p>Trending</p>
+    <div class="container max-w-7xl mx-auto px-3">
+        <div class="mt-4 mb-2 d-flex align-items-center justify-content-between">
+            <h3 class="fw-bold mb-0">
+                <% if (typeof selectedCategory !== 'undefined' && selectedCategory) { %>
+                    <%= selectedCategory %>
+                <% } else if (typeof searchQuery !== 'undefined' && searchQuery) { %>
+                    Search Results for "<%= searchQuery %>"
+                <% } else { %>
+                    Explore Stays
+                <% } %>
+            </h3>
+        </div>
+
+        <div id="filters-container">
+            <div class="filters-wrapper">
+                <% const currentCat = typeof selectedCategory !== 'undefined' ? selectedCategory : ''; %>
+                
+                <a href="/listings" class="filter-link <%= !currentCat ? 'active' : '' %>">
+                    <div class="filter">
+                        <div><i class="fa-solid fa-border-all"></i></div>
+                        <p>All</p>
+                    </div>
+                </a>
+
+                <a href="/listings?category=Trending" class="filter-link <%= currentCat === 'Trending' ? 'active' : '' %>">
+                    <div class="filter">
+                        <div><i class="fa-solid fa-fire"></i></div>
+                        <p>Trending</p>
+                    </div>
+                </a>
+
+                <a href="/listings?category=Budget Rooms" class="filter-link <%= currentCat === 'Budget Rooms' ? 'active' : '' %>">
+                    <div class="filter">
+                        <div><i class="fa-solid fa-bed"></i></div>
+                        <p>Budget Rooms</p>
+                    </div>
+                </a>
+
+                <a href="/listings?category=Heart of the City" class="filter-link <%= currentCat === 'Heart of the City' ? 'active' : '' %>">
+                    <div class="filter">
+                        <div><i class="fa-solid fa-building-user"></i></div>
+                        <p>City Center</p>
+                    </div>
+                </a>
+
+                <a href="/listings?category=Mountains" class="filter-link <%= currentCat === 'Mountains' ? 'active' : '' %>">
+                    <div class="filter">
+                        <div><i class="fa-solid fa-mountain"></i></div>
+                        <p>Mountains</p>
+                    </div>
+                </a>
+
+                <a href="/listings?category=Castles" class="filter-link <%= currentCat === 'Castles' ? 'active' : '' %>">
+                    <div class="filter">
+                        <div><i class="fa-brands fa-fort-awesome"></i></div>
+                        <p>Castles</p>
+                    </div>
+                </a>
+
+                <a href="/listings?category=Beaches" class="filter-link <%= currentCat === 'Beaches' ? 'active' : '' %>">
+                    <div class="filter">
+                        <div><i class="fa-solid fa-umbrella-beach"></i></div>
+                        <p>Beaches</p>
+                    </div>
+                </a>
+
+                <a href="/listings?category=Forest Resorts" class="filter-link <%= currentCat === 'Forest Resorts' ? 'active' : '' %>">
+                    <div class="filter">
+                        <div><i class="fa-solid fa-tree"></i></div>
+                        <p>Forest</p>
+                    </div>
+                </a>
+
+                <a href="/listings?category=Bed & Breakfasts" class="filter-link <%= currentCat === 'Bed & Breakfasts' ? 'active' : '' %>">
+                    <div class="filter">
+                        <div><i class="fa-solid fa-mug-hot"></i></div>
+                        <p>B&B</p>
+                    </div>
+                </a>
+
+                <a href="/listings?category=Vineyards" class="filter-link <%= currentCat === 'Vineyards' ? 'active' : '' %>">
+                    <div class="filter">
+                        <div><i class="fa-solid fa-wine-glass"></i></div>
+                        <p>Vineyards</p>
+                    </div>
+                </a>
             </div>
 
-            <div class="filter">
-                <div><i class="fa-solid fa-bed"></i></div>
-                <p>Budget Rooms</p>
-            </div>
-
-            <div class="filter">
-                <div><i class="fa-solid fa-mountain-city"></i></div>
-                <p>Heart of the City</p>
-            </div>
-
-            <div class="filter">
-                <div><i class="fa-solid fa-mountain"></i></div>
-                <p>Mountains</p>
-            </div>
-
-            <div class="filter">
-                <div><i class="fa-brands fa-fort-awesome"></i></div>
-                <p>Castles</p>
-            </div>
-
-            <!-- <div class="filter">
-                <div><i class="fa-solid fa-igloo"></i></div>
-                <p>Arctic</p>
-            </div> -->
-
-            <div class="filter">
-                <div><i class="fa-solid fa-umbrella-beach"></i></div>
-                <p>Beaches</p>
-            </div>
-
-            <div class="filter">
-                <div><i class="fa-solid fa-tree"></i></div>
-                <p>Forest Resorts</p>
-            </div>
-
-            <div class="filter">
-                <div><i class="fa-solid fa-mug-hot"></i></div>
-                <p>Bed & Breakfasts</p>
-            </div>
-
-            <div class="filter">
-                <div><i class="fa-solid fa-wine-glass"></i></div>
-                <p>Vineyards</p>
-            </div>
-
-            <div class="tax-toggle">
-                <div class="form-check-reverse form-switch">
-                    <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault">
-                    <label class="form-check-label" for="flexSwitchCheckDefault">Display total after taxes</label>
-                  </div>
-            </div>
-
+            <div class="tax-toggle ms-auto">
+                <div class="form-check-reverse form-switch m-0">
+                    <input class="form-check-input cursor-pointer" type="checkbox" role="switch" id="flexSwitchCheckDefault">
+                    <label class="form-check-label cursor-pointer" for="flexSwitchCheckDefault">Display total after taxes</label>
+                </div>
             </div>
         </div>
+
+        <% if (allListings.length === 0) { %>
+            <div class="text-center py-5">
+                <i class="fa-solid fa-house-circle-xmark text-muted fs-1 mb-3"></i>
+                <h4 class="fw-bold">No stays found</h4>
+                <p class="text-muted">Try adjusting your filters or searching for another destination.</p>
+                <a href="/listings" class="btn btn-outline-danger mt-2 rounded-pill px-4">View All Listings</a>
+            </div>
+        <% } %>
+
         <div class="row row-cols-lg-4 row-cols-md-2 row-cols-sm-1 g-4 mb-5">
             <% for(let listing of allListings) { %>
+                <% const priceWithTax = Math.round(listing.price * 1.18); %>
                 <div class="col">
                     <a href="/listings/<%= listing._id %>" class="listing-link">
                         <div class="card listing-card h-100">
-                            <img src="<%= listing.image.url || 'https://plus.unsplash.com/premium_photo-1689609950112-d66095626efb?w=1000&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8aG9tZXxlbnwwfHwwfHx8MA%3D%3D' %>" class="card-img-top" alt="Listing_Image" style="height: 20rem;">
-                            <div class="card-body d-flex flex-column">
-                                <h5 class="card-title mb-2"><%= listing.title %></h5>
-                                <p class="card-text mb-2">
-                                    <strong>&#8377;<%= listing.price.toLocaleString("en-IN") %></strong>/night
-                                    <i class="tax-info text-muted"> &nbsp; &nbsp; +18% GST</i>
+                            <div class="position-relative overflow-hidden">
+                                <img src="<%= listing.image.url || 'https://plus.unsplash.com/premium_photo-1689609950112-d66095626efb?w=1000&auto=format&fit=crop&q=60' %>" class="card-img-top" alt="Listing_Image">
+                                <div class="position-absolute top-0 end-0 m-3">
+                                    <span class="card-category-badge"><%= listing.category %></span>
+                                </div>
+                            </div>
+                            <div class="card-body d-flex flex-column p-3">
+                                <h6 class="card-title fw-bold mb-1 text-truncate"><%= listing.title %></h6>
+                                <p class="card-text text-muted small mb-2">
+                                    <i class="fa-solid fa-location-dot me-1 text-danger"></i> <%= listing.location %>, <%= listing.country %>
                                 </p>
-                                <p class="card-text mb-1">
-                                    <span class="badge bg-light text-dark"><%= listing.category %></span>
-                                </p>
-                                <p class="card-text text-muted mb-0 mt-auto">
-                                    <i class="fa-solid fa-location-dot"></i> <%= listing.location %>, <%= listing.country %>
-                                </p>
+                                <div class="mt-auto">
+                                    <p class="card-text mb-0">
+                                        <span class="price-without-tax">
+                                            <strong>&#8377;<%= listing.price.toLocaleString("en-IN") %></strong> / night
+                                        </span>
+                                        <span class="price-with-tax">
+                                            <strong>&#8377;<%= priceWithTax.toLocaleString("en-IN") %></strong> total <small class="text-muted fw-normal">(incl. 18% GST)</small>
+                                        </span>
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     </a>
                 </div>
             <% } %>
-
-
         </div>
     </div>
 </body>
 
 <script>
-    let taxSwitch=document.getElementById("flexSwitchCheckDefault");
-    taxSwitch.addEventListener("click",()=>{
-        let taxInfo=document.getElementsByClassName("tax-info");
-        for(let info of taxInfo){
-            if(info.style.display != "inline"){
-                info.style.display="inline";
-            }else{
-                info.style.display="none";
-            }
+    let taxSwitch = document.getElementById("flexSwitchCheckDefault");
+    if (taxSwitch) {
+        taxSwitch.addEventListener("change", () => {
+            let pricesNoTax = document.getElementsByClassName("price-without-tax");
+            let pricesWithTax = document.getElementsByClassName("price-with-tax");
             
-        }
-    });
+            for (let i = 0; i < pricesNoTax.length; i++) {
+                if (taxSwitch.checked) {
+                    pricesNoTax[i].style.display = "none";
+                    pricesWithTax[i].style.display = "inline";
+                } else {
+                    pricesNoTax[i].style.display = "inline";
+                    pricesWithTax[i].style.display = "none";
+                }
+            }
+        });
+    }
 </script>
