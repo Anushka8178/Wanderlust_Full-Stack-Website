@@ -3,6 +3,7 @@ const Schema=mongoose.Schema;
 const Review = require("../models/review");
 
 const validCategories = [
+    "Trending",
     "Budget Rooms",
     "Heart of the City",
     "Mountains",
